@@ -71,6 +71,7 @@ public class Professor extends User {
         if (this.courses.isEmpty()) {
             System.out.println("You are not teaching any courses.");
         } else {
+            System.out.println("Your Course IDs: " + this.courses); // Debugging line
             long count = this.courses.stream()
                                      .filter(courseId -> allCourses.stream().anyMatch(c -> c.getCourseId().equals(courseId)))
                                      .peek(courseId -> allCourses.stream()
@@ -85,6 +86,7 @@ public class Professor extends User {
         }
     }
 
+
     // Method to set the courses for the professor
     public void setCourses(List<String> courses) {
         this.courses = courses;
@@ -94,5 +96,12 @@ public class Professor extends User {
     public List<String> getCourses() {
         return courses;
     }
+    
+    // Getter for professorId
+    public String getProfessorId() {
+        return id;
+    }
+
+    
 
 }

@@ -18,13 +18,36 @@ public class FileInfoReader {
     private String studentInfoPath;
     private String profInfoPath;
     private String adminInfoPath;
+    private Map<String, String> professorNameToIdMap = new HashMap<>();
 
     public FileInfoReader(String courseInfoPath, String studentInfoPath, String profInfoPath, String adminInfoPath) {
         this.courseInfoPath = courseInfoPath;
         this.studentInfoPath = studentInfoPath;
         this.profInfoPath = profInfoPath;
         this.adminInfoPath = adminInfoPath;
+        try {
+            loadProfessorNameToIdMap(); // Load mapping when instance is created
+        } catch (IOException e) {
+            // Handle the exception, for example, log it or print a message
+            System.err.println("Error loading professor information: " + e.getMessage());
+            // Depending on how critical this operation is, you might want to rethrow as a runtime exception
+            // or handle it in a way that the application can safely continue.
+        } // Load mapping when instance is created
     }
+
+    private void loadProfessorNameToIdMap() throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(profInfoPath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(";");
+                if (parts.length >= 2) {
+                    // Assuming parts[0] is ID and parts[1] is name
+                    professorNameToIdMap.put(parts[1].trim(), parts[0].trim());
+                }
+            }
+        }
+    }
+
 
     public List<Course> readCourseInfo() throws IOException {
         List<Course> courses = new ArrayList<>();
@@ -33,8 +56,10 @@ public class FileInfoReader {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(";");
                 if (parts.length == 7) {
-                    int capacity = Integer.parseInt(parts[6].trim()); // Trim the string before parsing
-                    Course course = new Course(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], capacity);
+                    int capacity = Integer.parseInt(parts[6].trim());
+                    String professorName = parts[2].trim();
+                    String professorId = professorNameToIdMap.getOrDefault(professorName, ""); // Get ID or empty string if not found
+                    Course course = new Course(parts[0], parts[1], professorName, professorId, parts[3], parts[4], parts[5], capacity);
                     courses.add(course);
                 }
             }

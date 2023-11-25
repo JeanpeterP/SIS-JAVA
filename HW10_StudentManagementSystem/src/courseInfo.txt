@@ -38,13 +38,12 @@ CIS548; Operating Systems Design and Implementation; Boon Thau Loo; TR; 13:30; 1
 CIS550; Database and Information Systems; Mayur H Naik; MW; 10:30; 12:00; 200
 CIS553; Networked Systems; Vincent F Liu; MW; 16:30; 18:00; 150
 CIS555; Internet and Web Systems; Zachary Ives; MW; 12:00; 13:30; 100
-CIS557; Programming for the Web; Eric Noel Fouh Mbindi; MW; 13:30; 15:00; 40
+CIS557; New Proframming for the web; Stephen Lane; MF; 13:30; 15:00; 40
 CIS559; Programming and Problem Solving; Swapneel Sheth; MW; 15:00; 16:30; 25
 CIS560; Interactive Computer Graphics; Adam D Mally; MW; 12:00; 13:30; 80
-CIS561; Advanced Rendering; Adam D Mally; MW; 13:30; 15:00; 50
 CIS568; Game Design Practicum; Stephen Lane; MW; 15:00; 16:30; 25
-CIS571; Computer Organization and Design; Joseph L Devietti; TR; 12:00; 13:30; 170
+CIS571; New Computer Organization; Stephen Lane; MW; 12:00; 13:30; 170
 CIS580; Machine Perception; Konstantinos Daniilidis; MW; 12:00; 13:30; 100
 CIS620; Advanced Topics in Machine Learning; Stephen Lane; MF; 15:00; 18:00; 40
-CIS660; Updates Advanced topics; 025; MF; 10:30; 12:00; 32
+CIS660; Updates Advanced topics; Stephen Lane; MF; 10:30; 12:00; 32
 CIS999; New Course; Stephen Lane; MW; 07:00; 09:00; 25

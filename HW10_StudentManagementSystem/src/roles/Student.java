@@ -6,6 +6,9 @@ import java.util.stream.Collectors;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import courses.Course;
 
@@ -34,7 +37,7 @@ public class Student extends User {
                 	dropCourse(scanner, allStudents, "src/studentinfo.txt");
                     break;
                 case 4:
-                    viewGrades();
+                    viewGrades(allCourses);
                     break;
                 case 5:
                     exit = true;
@@ -50,7 +53,7 @@ public class Student extends User {
         courses.forEach((courseId, grade) -> System.out.println("Course ID: " + courseId + ", Grade: " + grade));
     }
 
-    // Add a course
+ // Add a course
     public void addCourse(List<Course> allCourses, List<Student> allStudents, Scanner scanner) {
         System.out.println("Enter Course ID to add:");
         String courseId = scanner.next();
@@ -59,14 +62,70 @@ public class Student extends User {
                                       .findFirst()
                                       .orElse(null);
 
-        if (courseToAdd != null && !courses.containsKey(courseId) && courseToAdd.addStudent(this.getId())) {
+        if (courseToAdd == null) {
+            System.out.println("Course not found.");
+            return;
+        }
+
+        if (courses.containsKey(courseId)) {
+            System.out.println("You are already enrolled in this course.");
+            return;
+        }
+
+        // Check for time conflicts
+        for (Map.Entry<String, String> entry : courses.entrySet()) {
+            Course existingCourse = allCourses.stream()
+                                              .filter(c -> c.getCourseId().equals(entry.getKey()))
+                                              .findFirst()
+                                              .orElse(null);
+
+            if (existingCourse != null && hasTimeConflict(existingCourse, courseToAdd)) {
+                System.out.println("Cannot add course due to a schedule conflict with " + existingCourse.getCourseId());
+                return;
+            }
+        }
+
+        if (courseToAdd.addStudent(this.getId())) {
             courses.put(courseId, "Not Graded");
             System.out.println("Course added successfully.");
             Student.saveStudentsToFile(allStudents, "src/studentinfo.txt"); // Save changes to file
         } else {
-            System.out.println("Course could not be added. It may be full or not exist.");
+            System.out.println("Could not add course.");
         }
     }
+
+    // Helper method to check for time conflicts
+    private boolean hasTimeConflict(Course existingCourse, Course newCourse) {
+        // Compare days
+        for (char day : newCourse.getDays().toCharArray()) {
+            if (existingCourse.getDays().indexOf(day) != -1) {
+                // Compare times
+                if (overlaps(existingCourse.getStartTime(), existingCourse.getEndTime(),
+                             newCourse.getStartTime(), newCourse.getEndTime())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+ // Helper method to check if two time periods overlap
+    private boolean overlaps(String startTime1, String endTime1, String startTime2, String endTime2) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        try {
+            LocalTime start1 = LocalTime.parse(startTime1.trim(), formatter);
+            LocalTime end1 = LocalTime.parse(endTime1.trim(), formatter);
+            LocalTime start2 = LocalTime.parse(startTime2.trim(), formatter);
+            LocalTime end2 = LocalTime.parse(endTime2.trim(), formatter);
+
+            return !start1.isAfter(end2) && !start2.isAfter(end1);
+        } catch (DateTimeParseException e) {
+            System.err.println("Error parsing time: " + e.getMessage());
+            return false; // or handle the error as appropriate
+        }
+    }
+
+
 
  // New method to save student data to file
     public static void saveStudentsToFile(List<Student> students, String filePath) {
@@ -104,9 +163,21 @@ public class Student extends User {
 
 
     // View grades
-    public void viewGrades() {
-        courses.forEach((courseId, grade) -> System.out.println("Course ID: " + courseId + ", Grade: " + grade));
+    public void viewGrades(List<Course> allCourses) {
+        courses.forEach((courseId, grade) -> {
+            Course course = allCourses.stream()
+                                      .filter(c -> c.getCourseId().equals(courseId))
+                                      .findFirst()
+                                      .orElse(null);
+
+            if (course != null) {
+                System.out.println("Grade of" + course.getCourseName() + " (" + courseId + "): " + grade);
+            } else {
+                System.out.println("Course ID: " + courseId + " not found");
+            }
+        });
     }
+
 
     // Getters and setters
     public Map<String, String> getCourses() {

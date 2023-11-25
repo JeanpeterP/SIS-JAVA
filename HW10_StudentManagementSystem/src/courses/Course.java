@@ -16,7 +16,7 @@ public class Course {
     private int capacity;
     private Set<String> enrolledStudents; // Store student IDs
 
-    public Course(String courseId, String courseName, String professorName, String days, String startTime, String endTime, int capacity) {
+    public Course(String courseId, String courseName, String professorName, String professorId, String days, String startTime, String endTime, int capacity) {
         this.courseId = courseId;
         this.courseName = courseName;
         this.professorName = professorName;
@@ -128,6 +128,7 @@ public class Course {
         return professorId;
     }
 
+    
     public void setProfessorId(String professorId) {
         this.professorId = professorId;
     }

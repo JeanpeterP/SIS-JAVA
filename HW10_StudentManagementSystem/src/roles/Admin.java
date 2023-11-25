@@ -205,7 +205,18 @@ public class Admin extends User {
         }
         
         
-        Course newCourse = new Course(courseId.trim(), courseName.trim(), lecturerName.trim(), days.trim(), startTime.trim(), endTime.trim(), capacity);
+        // When creating a new course, include the professorId
+        Course newCourse = new Course(
+            courseId.trim(),
+            courseName.trim(),
+            professor.getName().trim(), // Professor's name
+            professor.getId().trim(),   // Professor's ID
+            days.trim(),
+            startTime.trim(),
+            endTime.trim(),
+            capacity
+        );
+
         this.courses.add(newCourse); // Using the instance variable
         System.out.println("Course added successfully.");
 
@@ -280,14 +291,14 @@ public class Admin extends User {
 
 
         // Edit professor name
-        System.out.println("Current Professor ID: " + course.getProfessorId());
+        System.out.println("Current Professor Name: " + course.getProfessorName());
         System.out.println("Enter new professor ID, or press enter to keep current:");
         String newProfessorId = scanner.nextLine();
         if (!newProfessorId.trim().isEmpty()) {
             Professor newProfessor = professorMap.get(newProfessorId.trim());
             if (newProfessor != null) {
                 course.setProfessorName(newProfessor.getName());
-                course.setProfessorId(newProfessorId.trim()); // Assuming you have a setProfessorId method
+                course.setProfessorId(newProfessorId.trim());
                 System.out.println("Professor updated to: " + newProfessor.getName());
             } else {
                 System.out.println("Professor ID not found. Keeping current professor.");
@@ -426,28 +437,42 @@ public class Admin extends User {
         }
     }
     
-    private boolean studentExists(String id, String username) {
-        return students.stream().anyMatch(s -> s.getId().equals(id) || s.getUsername().equals(username));
+    private boolean idExists(String id) {
+        return students.stream().anyMatch(s -> s.getId().equals(id));
+    }
+
+    private boolean usernameExists(String username) {
+        return students.stream().anyMatch(s -> s.getUsername().equals(username));
     }
     
     private void addStudent(Scanner scanner) {
-        System.out.println("Please enter the student ID, or type 'q' to end:");
-        String id = scanner.nextLine();
-        if ("q".equalsIgnoreCase(id)) return;
 
         System.out.println("Please enter the student's name, or type 'q' to end:");
         String name = scanner.nextLine();
         if ("q".equalsIgnoreCase(name)) return;
         name = capitalizeName(name);
 
-        if (studentExists(id, username)) {
-            System.out.println("Student with this ID or username already exists.");
-            return;
-        }
+
         
-        System.out.println("Please enter the student's username, or type 'q' to end:");
-        String username = scanner.nextLine();
-        if ("q".equalsIgnoreCase(username)) return;
+        // Loop for ID input
+        String id = "";
+        while (true) {
+            System.out.println("Please enter the student ID, or type 'q' to end:");
+            id = scanner.nextLine();
+            if ("q".equalsIgnoreCase(id)) return;
+            if (!idExists(id)) break; // Break the loop if the ID does not exist
+            System.out.println("A student with this ID already exists. Please try a different ID.");
+        }
+
+        // Loop for username input
+        String username = "";
+        while (true) {
+            System.out.println("Please enter the student's username, or type 'q' to end:");
+            username = scanner.nextLine();
+            if ("q".equalsIgnoreCase(username)) return;
+            if (!usernameExists(username)) break; // Break the loop if the username does not exist
+            System.out.println("A student with this username already exists. Please try a different username.");
+        }
 
         System.out.println("Please enter the student's password, or type 'q' to end:");
         String password = scanner.nextLine();
