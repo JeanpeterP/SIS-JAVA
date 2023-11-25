@@ -21,6 +21,7 @@ public class Controller {
     private static List<Admin> admins;
     private static List<Course> courses;
     private static Admin adminInstance; // Admin instance
+    
     private static void loadData(String courseInfoPath, String studentInfoPath, String profInfoPath, String adminInfoPath) {
         fileInfoReader = new FileInfoReader(courseInfoPath, studentInfoPath, profInfoPath, adminInfoPath);
 
@@ -34,16 +35,20 @@ public class Controller {
             Map<String, Professor> professorMap = new HashMap<>();
             for (Professor professor : professors) {
                 professorMap.put(professor.getId(), professor);
+                // Initialize each professor's courses list
+                professor.setCourses(new ArrayList<>());
             }
 
-            // Link courses with professors (if needed)
+         // Link courses with professors
             for (Course course : courses) {
-                // Change to use professor ID to find the professor
-                Professor professor = professorMap.get(course.getProfessorId());
+                String professorId = course.getProfessorId();
+                Professor professor = professorMap.get(professorId);
                 if (professor != null) {
                     professor.getCourses().add(course.getCourseId());
                 }
             }
+            
+            
 
 
             // Create a map for quick course lookups
@@ -91,31 +96,36 @@ public class Controller {
         // Load data
         loadData(courseInfoPath, studentInfoPath, profInfoPath, adminInfoPath);
 
-        // Main application logic
-        Scanner scanner = new Scanner(System.in);
-        boolean running = true;
-        while (running) {
-            System.out.println("Select option: 1. Student Login 2. Professor Login 3. Admin Login 4. Quit");
-            int choice = scanner.nextInt();
-            switch (choice) {
-                case 1:
-                    handleStudentLogin(scanner, courses, students);
-                    break;
-                case 2:
-                	handleProfessorLogin(scanner, courses, students); 
-                    break;
-                case 3:
-                    handleAdminLogin(scanner);
-                    break;
-                case 4:
-                    System.out.println("Exiting system.");
-                    running = false;
-                    break;
-                default:
-                    System.out.println("Invalid choice.");
+     // Main application logic
+        try (Scanner scanner = new Scanner(System.in)) {
+            boolean running = true;
+            while (running) {
+                System.out.println("Select option: 1. Student Login 2. Professor Login 3. Admin Login 4. Quit");
+                if (!scanner.hasNextInt()) {
+                    System.out.println("Invalid input. Please enter a number.");
+                    scanner.next(); // to consume the invalid input
+                    continue;
+                }
+                int choice = scanner.nextInt();
+                switch (choice) {
+                    case 1:
+                        handleStudentLogin(scanner, courses, students);
+                        break;
+                    case 2:
+                        handleProfessorLogin(scanner, courses, students); 
+                        break;
+                    case 3:
+                        handleAdminLogin(scanner);
+                        break;
+                    case 4:
+                        System.out.println("Exiting system.");
+                        running = false;
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please enter a number between 1 and 4.");
+                }
             }
         }
-        scanner.close();
     }
     
     private static void handleStudentLogin(Scanner scanner, List<Course> allCourses, List<Student> allStudents) {
