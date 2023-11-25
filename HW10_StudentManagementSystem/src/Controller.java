@@ -31,25 +31,23 @@ public class Controller {
             professors = fileInfoReader.readProfInfo();
             admins = fileInfoReader.readAdminInfo();
 
-            // Create a map for quick professor lookups
-            Map<String, Professor> professorMap = new HashMap<>();
+            // Create a map for quick professor lookups by name
+            Map<String, Professor> professorNameMap = new HashMap<>();
             for (Professor professor : professors) {
-                professorMap.put(professor.getId(), professor);
-                // Initialize each professor's courses list
-                professor.setCourses(new ArrayList<>());
+                professorNameMap.put(professor.getName().toLowerCase(), professor); // Convert to lower case for case-insensitive matching
             }
 
-         // Link courses with professors
+            // Link courses with professors
             for (Course course : courses) {
-                String professorId = course.getProfessorId();
-                Professor professor = professorMap.get(professorId);
-                if (professor != null) {
+                String professorName = course.getProfessorName().toLowerCase(); // Convert to lower case
+                if (professorNameMap.containsKey(professorName)) {
+                    Professor professor = professorNameMap.get(professorName);
                     professor.getCourses().add(course.getCourseId());
+                    course.setProfessorId(professor.getId()); // Set the professor ID in the course
+                } else {
+                    System.out.println("No matching professor found for Course: " + course.getCourseName() + ", Professor: " + course.getProfessorName());
                 }
             }
-            
-            
-
 
             // Create a map for quick course lookups
             Map<String, Course> courseMap = new HashMap<>();
@@ -70,7 +68,6 @@ public class Controller {
 
             // Print final state for debugging
             for (Professor professor : professors) {
-            	System.out.println(professor.getId() + " - " + professor.getName());
                 System.out.println("Professor: " + professor.getName() + ", Courses: " + professor.getCourses());
             }
 
@@ -79,6 +76,7 @@ public class Controller {
             System.exit(1);
         }
     }
+
 
 
 
