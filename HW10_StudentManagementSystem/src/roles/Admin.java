@@ -34,7 +34,11 @@ public class Admin extends User {
 		    this.professorMap = new HashMap<>();
 		    
 		}
-	 
+
+	 public void initializeProfessorMap(Map<String, Professor> professorMap) {
+	     this.professorMap = new HashMap<>(professorMap);
+	 }
+
 	 public void setCourses(List<Course> courses) {
 		    this.courses = courses;
 		}
@@ -66,8 +70,19 @@ public class Admin extends User {
 		            scanner.nextLine(); // Clear the invalid input before retrying
 		        }
 		    }
+		    
 		}
+    // Method to get the list of courses
+    public List<Course> getCourses() {
+        return courses;
+    }
 
+    // Method to get the list of professors
+    public List<Professor> getProfessors() {
+        // Return a new list containing all items from the original list
+        // This prevents external modifications to the internal list
+        return new ArrayList<>(professors);
+    }
     
  // Admin methodd
     // Manage courses and it's methods
@@ -266,20 +281,20 @@ public class Admin extends User {
 
 
 
-    private void editCourse(Scanner scanner) {
+    public void editCourse(Scanner scanner) {
         System.out.println("Available courses: ");
         for (Course c : this.courses) {
             System.out.println(c.getCourseId() + " - " + c.getCourseName());
         }
 
         System.out.println("Enter Course ID to edit:");
-        String courseId = scanner.next();
+        String courseId = scanner.nextLine();
         Course course = findCourseById(courseId);
+
         if (course == null) {
             System.out.println("Course not found.");
             return;
         }
-        scanner.nextLine(); // Consume the leftover newline
 
         // Edit course name
         System.out.println("Current Course Name: " + course.getCourseName());
@@ -686,21 +701,33 @@ public class Admin extends User {
     private void addProfessor(Scanner scanner) {
         System.out.println("Please enter the professor ID, or type 'q' to end:");
         String id = scanner.nextLine();
-        if ("q".equalsIgnoreCase(id)) return;
+        if ("q".equalsIgnoreCase(id)) {
+            System.out.println("Operation cancelled.");
+            return;
+        }
 
         System.out.println("Please enter the professor's name, or type 'q' to end:");
         String name = scanner.nextLine();
-        if ("q".equalsIgnoreCase(name)) return;
+        if ("q".equalsIgnoreCase(name)) {
+            System.out.println("Operation cancelled.");
+            return;
+        }
         name = capitalizeName(name);
         
         System.out.println("Please enter the professor's username, or type 'q' to end:");
         String username = scanner.nextLine();
-        if ("q".equalsIgnoreCase(username)) return;
+        if ("q".equalsIgnoreCase(username)) {
+            System.out.println("Operation cancelled.");
+            return;
+        }
         username = capitalizeName(username);
         
         System.out.println("Please enter the professor's password, or type 'q' to end:");
         String password = scanner.nextLine();
-        if ("q".equalsIgnoreCase(password)) return;
+        if ("q".equalsIgnoreCase(password)) {
+            System.out.println("Operation cancelled.");
+            return;
+        }
 
         if (this.professorMap.containsKey(id)) {
             System.out.println("Professor ID already exists.");
