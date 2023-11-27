@@ -39,9 +39,14 @@ public class Course {
                '}';
     }
     public boolean addStudent(String studentId) {
+        if (studentId == null || studentId.isEmpty()) {
+            return false; // Return false for invalid IDs
+        }
+
         if (enrolledStudents.size() < capacity) {
             return enrolledStudents.add(studentId);
         }
+
         return false;
     }
 

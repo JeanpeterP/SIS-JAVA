@@ -132,7 +132,7 @@ public class Admin extends User {
 
 
 
-    private void addCourse(Scanner scanner) {
+    public void addCourse(Scanner scanner) {
         System.out.println("Please enter the course ID, or type 'q' to end:");
         String courseId = scanner.nextLine();
         if ("q".equalsIgnoreCase(courseId)) return;
