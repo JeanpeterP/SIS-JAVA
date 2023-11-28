@@ -47,24 +47,4 @@ CIS571; Computer Organization and Design; Joseph L Devietti; TR; 12:00; 13:30; 1
 CIS580; Machine Perception; Konstantinos Daniilidis; MW; 12:00; 13:30; 100
 CIS620; Advanced Topics in Machine Learning; Dan Roth; M; 15:00; 18:00; 40
 CIS660; Advanced Topics in Computer Graphics and Animation; Stephen Lane; MW; 10:30; 12:00; 32
-CIS670; Advanced Topics in Programming Languages; Stephan A. Zdancewic; MW; 13:00; 15:00; 32CIS700; Existing Course; Existing Professor; MWF; 09:00; 10:00; 30
-CIS699; New Course; Professor Name 1; MWF; 09:00; 10:00; 25
-CIS700; Updated Course Name; Professor Name 1; MF; 10:00; 11:00; 35
-CIS700; Existing Course; Existing Professor; MWF; 09:00; 10:00; 30
-CIS600; NNNew Course; Professor Name 1; MWF; 09:00; 10:00; 25
-CIS700; Existing Course; Existing Professor; MWF; 09:00; 10:00; 30
-CIS699; New Course; Professor Name 1; MWF; 09:00; 10:00; 25
-CIS700; Updated Course Name; Professor Name 1; MF; 10:00; 11:00; 35
-CIS700; Existing Course; Existing Professor; MWF; 09:00; 10:00; 30
-CIS600; NNNew Course; Professor Name 1; MWF; 09:00; 10:00; 25
-CIS700; Existing Course; Existing Professor; MWF; 09:00; 10:00; 30
-CIS699; New Course; Professor Name 1; MWF; 09:00; 10:00; 25
-CIS700; Updated Course Name; Professor Name 1; MF; 10:00; 11:00; 35
-CIS700; Existing Course; Existing Professor; MWF; 09:00; 10:00; 30
-CIS600; NNNew Course; Professor Name 1; MWF; 09:00; 10:00; 25
-CIS700; Existing Course; Existing Professor; MWF; 09:00; 10:00; 30
-CIS699; New Course; Professor Name 1; MWF; 09:00; 10:00; 25
-CIS700; Updated Course Name; Professor Name 1; MF; 10:00; 11:00; 35
-CIS700; Existing Course; Existing Professor; MWF; 09:00; 10:00; 30
-CIS699; New Course; Professor Name 1; MWF; 09:00; 10:00; 25
-CIS700; Updated Course Name; Professor Name 1; MF; 10:00; 11:00; 35
+CIS670; Advanced Topics in Programming Languages; Stephan A. Zdancewic; MW; 13:00; 15:00; 32

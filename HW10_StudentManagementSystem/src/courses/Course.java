@@ -25,7 +25,6 @@ public class Course {
         this.startTime = startTime;
         this.endTime = endTime;
         this.capacity = capacity;
-        this.enrolledStudents = new HashSet<>();
     }
     // Override the toString method
     @Override

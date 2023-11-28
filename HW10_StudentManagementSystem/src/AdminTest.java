@@ -106,7 +106,10 @@ class AdminTest {
     
     @Test
     void testAddCourseWithNonExistentProfessor() {
-        String simulatedUserInput = "CIS600\nNNNew Course\n09:00\n10:00\nMWF\n25\n029\n"; // Non-existent professor ID
+        // Inputs for addCourse followed by inputs for addProfessor
+        String simulatedUserInput = "CIS600\nNNNew Course\n09:00\n10:00\nMWF\n25\n925\n" + // addCourse inputs
+                                   "925\nNew Professor\nnewprof\nnewpassword\n"; // addProfessor inputs
+
         InputStream originalIn = System.in;
         String result;
 
@@ -116,12 +119,13 @@ class AdminTest {
 
             result = admin.addCourse(scanner); // Call the method and capture the result
 
-            // Assert that the returned message indicates the professor was not added successfully
+            // Assert that the returned message indicates the course was added successfully
             assertEquals("Course added successfully.", result);
         } finally {
             System.setIn(originalIn);
         }
     }
+
 
 
     @Test
