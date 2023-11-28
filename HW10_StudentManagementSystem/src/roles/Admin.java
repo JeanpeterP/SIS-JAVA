@@ -108,13 +108,11 @@ public class Admin extends User {
 
 
     // Method to add a course
-    public void saveCoursesToFile(String filePath) {
+    public void saveCoursesToFile(String filePath, boolean append) {
         File file = new File(filePath);
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            for (int i = 0; i < this.courses.size(); i++) {
-                Course course = this.courses.get(i);
-                // Join the course details with a semicolon and a space
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, append))) {
+            for (Course course : this.courses) {
                 String line = String.join("; ",
                         course.getCourseId().trim(),
                         course.getCourseName().trim(),
@@ -125,11 +123,7 @@ public class Admin extends User {
                         String.valueOf(course.getCapacity()).trim());
 
                 writer.write(line);
-
-                // Add a newline after each course except the last one
-                if (i < this.courses.size() - 1) {
-                    writer.newLine();
-                }
+                writer.newLine();  // Ensures each course starts on a new line
             }
         } catch (IOException e) {
             System.out.println("Error writing to file: " + e.getMessage());
@@ -147,76 +141,74 @@ public class Admin extends User {
 
 
 
-    public void addCourse(Scanner scanner) {
+    public String addCourse(Scanner scanner) {
         System.out.println("Please enter the course ID, or type 'q' to end:");
         String courseId = scanner.nextLine();
-        if ("q".equalsIgnoreCase(courseId)) return;
+        if ("q".equalsIgnoreCase(courseId)) return "Operation cancelled by user.";
 
         // Check if course already exists
         if (findCourseById(courseId) != null) {
             System.out.println("Course with this ID already exists.");
-            return;
+            return "Error: Course with this ID already exists.";
         }
         
         System.out.println("Please enter the course name, or type 'q' to end:");
         String courseName = scanner.nextLine();
-        if ("q".equalsIgnoreCase(courseName)) return;
+        if ("q".equalsIgnoreCase(courseName)) return "Operation cancelled by user.";
 
         System.out.println("Please enter the course start time (e.g., '19:00'), or type 'q' to end:");
         String startTime = scanner.nextLine();
-        if ("q".equalsIgnoreCase(startTime)) return;
+        if ("q".equalsIgnoreCase(startTime)) return "Operation cancelled by user.";
 
         System.out.println("Please enter the course end time (e.g., '21:00'), or type 'q' to end:");
         String endTime = scanner.nextLine();
-        if ("q".equalsIgnoreCase(endTime)) return;
+        if ("q".equalsIgnoreCase(endTime)) return "Operation cancelled by user.";
 
         System.out.println("Please enter the course days (e.g., 'MWF' for Monday, Wednesday, Friday), or type 'q' to end:");
         String days = scanner.nextLine();
-        if ("q".equalsIgnoreCase(days)) return;
+        if ("q".equalsIgnoreCase(days)) return "Operation cancelled by user.";
 
         System.out.println("Please enter the course capacity, or type 'q' to end:");
+        String input = scanner.nextLine();
+        if ("q".equalsIgnoreCase(input)) return "Operation cancelled by user.";
+
         int capacity;
         try {
-            capacity = Integer.parseInt(scanner.nextLine());
-            if (capacity < 0) throw new NumberFormatException();
+            capacity = Integer.parseInt(input);
+            if (capacity < 0) {
+                System.out.println("Invalid capacity: Capacity cannot be negative.");
+                return "Error: Invalid capacity - negative number.";
+            }
         } catch (NumberFormatException e) {
-            System.out.println("Invalid capacity. Please enter a valid number or 'q' to end.");
-            return;
+            System.out.println("Invalid capacity. Please enter a valid number.");
+            return "Error: Invalid capacity - not a number.";
         }
+
 
         System.out.println("Please enter the course lecturer ID, or type 'q' to end:");
         String lecturerId = scanner.nextLine();
-        if ("q".equalsIgnoreCase(lecturerId)) return;
+        if ("q".equalsIgnoreCase(lecturerId)) return "Operation cancelled by user.";
 
         // Check if the professor exists
         Professor professor = professorMap.get(lecturerId);
-        String lecturerName; // Variable to hold lecturer's name
-        if (professor != null) {
-            System.out.println("Professor found: " + professor.getName());
-            lecturerName = professor.getName(); // Use the professor's name
-            System.out.println("Courses list: " + courses);
-            System.out.println("Professor: " + professor);
-            // Check for time conflicts
-            for (Course existingCourse : courses) {
-                System.out.println("Existing Course: " + existingCourse);
-                System.out.println("Comparing Existing Course Professor Name: '" + existingCourse.getProfessorName().trim() + "' with Current Professor Name: '" + professor.getName().trim() + "'");
-
-                // Check for time conflict and take action if conflict exists
-                if (existingCourse.getProfessorName().trim().equals(professor.getName().trim()) && timeConflict(existingCourse, startTime, endTime, days)) {
-                    System.out.println("Time conflict with another course taught by the same lecturer.");
-                    return;
-                }
-            }
-            
-        } else {
+        if (professor == null) {
             System.out.println("Professor not found. Adding a new professor:");
-            addProfessor(scanner); // Call addProfessor method
-            professor = professorMap.get(lecturerId); // Get the newly added professor
-            if (professor == null) {
-                System.out.println("Error: Professor was not successfully added.");
-                return;
+            boolean isProfessorAdded = addProfessor(scanner); // Modify addProfessor to return a boolean
+            if (!isProfessorAdded) {
+                return "Error: Professor was not successfully added.";
             }
-            lecturerName = professor.getName(); // Use the new professor's name
+            professor = professorMap.get(lecturerId); // Get the newly added professor
+        }
+
+        // Check for time conflicts
+        for (Course existingCourse : courses) {
+            System.out.println("Existing Course: " + existingCourse);
+            System.out.println("Comparing Existing Course Professor Name: '" + existingCourse.getProfessorName().trim() + "' with Current Professor Name: '" + professor.getName().trim() + "'");
+
+            if (existingCourse.getProfessorName().trim().equals(professor.getName().trim()) && timeConflict(existingCourse, startTime, endTime, days)) {
+                System.out.println("Time conflict with another course taught by the same lecturer.");
+                return "Error: Time conflict with another course.";
+            }
         }
         
         
@@ -232,10 +224,16 @@ public class Admin extends User {
             capacity
         );
 
-        this.courses.add(newCourse); // Using the instance variable
+        // Add the new course to the list
+        this.courses.add(newCourse);
         System.out.println("Course added successfully.");
 
-        saveCoursesToFile("src/courseinfo.txt");
+        // Save the course list to the file
+        saveCoursesToFile("src/courseinfo.txt", true);
+
+        // Return a success message
+        return "Course added successfully.";
+
     }
 
     private boolean timeConflict(Course existingCourse, String newStartTime, String newEndTime, String newDays) {
@@ -358,7 +356,7 @@ public class Admin extends User {
         }
 
         System.out.println("Course updated successfully.");
-        saveCoursesToFile("src/courseinfo.txt");
+        saveCoursesToFile("src/courseinfo.txt", true);
     }
 
 
@@ -372,7 +370,7 @@ public class Admin extends User {
         if (courseToDelete != null) {
             this.courses.remove(courseToDelete);
             System.out.println("Course deleted successfully.");
-            saveCoursesToFile("src/courseinfo.txt");
+            saveCoursesToFile("src/courseinfo.txt", true);
         } else {
             System.out.println("Course not found.");
         }
@@ -698,19 +696,19 @@ public class Admin extends User {
     
  // ... [previous code]
 
-    private void addProfessor(Scanner scanner) {
+    private boolean addProfessor(Scanner scanner) {
         System.out.println("Please enter the professor ID, or type 'q' to end:");
         String id = scanner.nextLine();
         if ("q".equalsIgnoreCase(id)) {
             System.out.println("Operation cancelled.");
-            return;
+            return false;
         }
 
         System.out.println("Please enter the professor's name, or type 'q' to end:");
         String name = scanner.nextLine();
         if ("q".equalsIgnoreCase(name)) {
             System.out.println("Operation cancelled.");
-            return;
+            return false;
         }
         name = capitalizeName(name);
         
@@ -718,7 +716,7 @@ public class Admin extends User {
         String username = scanner.nextLine();
         if ("q".equalsIgnoreCase(username)) {
             System.out.println("Operation cancelled.");
-            return;
+            return false;
         }
         username = capitalizeName(username);
         
@@ -726,12 +724,12 @@ public class Admin extends User {
         String password = scanner.nextLine();
         if ("q".equalsIgnoreCase(password)) {
             System.out.println("Operation cancelled.");
-            return;
+            return false;
         }
 
         if (this.professorMap.containsKey(id)) {
             System.out.println("Professor ID already exists.");
-            return;
+            return false;
         }
 
         Professor newProfessor = new Professor(id.trim(), name.trim(), username.trim(), password.trim(), new ArrayList<>());
@@ -740,6 +738,7 @@ public class Admin extends User {
 
         saveProfessorsToFile("src/profinfo.txt");
         System.out.println("Professor added successfully.");
+        return true;
     }
 
 

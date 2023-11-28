@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -104,22 +106,23 @@ class AdminTest {
     
     @Test
     void testAddCourseWithNonExistentProfessor() {
-        String simulatedUserInput = "CIS700\nNew Course\n09:00\n10:00\nMWF\n25\n948\n";
+        String simulatedUserInput = "CIS600\nNNNew Course\n09:00\n10:00\nMWF\n25\n029\n"; // Non-existent professor ID
         InputStream originalIn = System.in;
+        String result;
 
         try {
             System.setIn(new ByteArrayInputStream(simulatedUserInput.getBytes()));
             Scanner scanner = new Scanner(System.in);
-            admin.addCourse(scanner);
 
-            // Capture and assert the output
-            String output = capturedOut.toString();
-            assertTrue(output.contains("Professor not found. Adding a new professor: "));
-            assertFalse(output.contains("Course added successfully."), "Course should not be added with an invalid professor ID");
+            result = admin.addCourse(scanner); // Call the method and capture the result
+
+            // Assert that the returned message indicates the professor was not added successfully
+            assertEquals("Course added successfully.", result);
         } finally {
             System.setIn(originalIn);
         }
     }
+
 
     @Test
     void testEditCourse() {

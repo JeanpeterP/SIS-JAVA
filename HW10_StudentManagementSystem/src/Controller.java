@@ -22,6 +22,13 @@ public class Controller {
     private static List<Course> courses;
     private static Admin adminInstance; // Admin instance
     
+    // Declare file path variables as static fields
+    private static String courseInfoPath;
+    private static String studentInfoPath;
+    private static String profInfoPath;
+    private static String adminInfoPath;
+
+    
     private static void loadData(String courseInfoPath, String studentInfoPath, String profInfoPath, String adminInfoPath) {
         fileInfoReader = new FileInfoReader(courseInfoPath, studentInfoPath, profInfoPath, adminInfoPath);
 
@@ -86,10 +93,11 @@ public class Controller {
     public static void main(String[] args) {
         // Initialize paths to the data files
     	
-        String courseInfoPath = "src/courseinfo.txt";
-        String studentInfoPath = "src/studentinfo.txt";
-        String profInfoPath = "src/profinfo.txt";
-        String adminInfoPath = "src/admininfo.txt";
+        // Initialize paths to the data files
+        courseInfoPath = "src/courseinfo.txt";
+        studentInfoPath = "src/studentinfo.txt";
+        profInfoPath = "src/profinfo.txt";
+        adminInfoPath = "src/admininfo.txt";
 
         // Load data
         loadData(courseInfoPath, studentInfoPath, profInfoPath, adminInfoPath);
@@ -127,6 +135,7 @@ public class Controller {
     }
     
     private static void handleStudentLogin(Scanner scanner, List<Course> allCourses, List<Student> allStudents) {
+        loadData(courseInfoPath, studentInfoPath, profInfoPath, adminInfoPath);
         System.out.println("Enter student username:");
         String username = scanner.next();
         System.out.println("Enter password:");
@@ -152,6 +161,7 @@ public class Controller {
 
     
     private static void handleProfessorLogin(Scanner scanner, List<Course> allCourses, List<Student> allStudents) {
+        loadData(courseInfoPath, studentInfoPath, profInfoPath, adminInfoPath);
         System.out.println("Enter professor username:");
         String username = scanner.next();
         System.out.println("Enter password:");
@@ -177,6 +187,7 @@ public class Controller {
 
 
     private static void handleAdminLogin(Scanner scanner) {
+        loadData(courseInfoPath, studentInfoPath, profInfoPath, adminInfoPath);
         System.out.println("Enter admin username:");
         String username = scanner.next();
         System.out.println("Enter password:");

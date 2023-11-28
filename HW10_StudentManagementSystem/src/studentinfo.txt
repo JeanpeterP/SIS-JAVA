@@ -1,4 +1,3 @@
-001; Newstudentname1; NewtestStudent01; password999; CIS320: C+, CIS660: Not Graded
-003; Studentname3; testStudent03; password590; CIS515: A, CIS191: B+, CIS471: B-
-03; Rodger Biller; testStudent003; password590; CIS320: A+
-004; Polly Hilly; newstudent4; password590; CIS660: Not Graded
+001; StudentName1; testStudent01; password590; CIS191: A, CIS320: A
+002; StudentName2; testStudent02; password590; CIT592: A, CIT593: A-
+003; Studentname3; testStudent03; password590; CIS670: B-
