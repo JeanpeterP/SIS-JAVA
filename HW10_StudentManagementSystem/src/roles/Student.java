@@ -14,18 +14,52 @@ import courses.Course;
 
 public class Student extends User {
     private Map<String, String> courses; // Course ID and Grade
-
+    
+    /**
+     * Represents a student user in the system.
+     * Extends the User class with student-specific attributes and operations.
+     * Includes functionality for managing courses, viewing grades, and handling course scheduling conflicts.
+     */
     public Student(String id, String name, String username, String password, Map<String, String> courses) {
         super(id, name, username, password);
         this.courses = courses;
     }
 
-    // Manage student operations
+    /**
+     * Manages student-specific operations, providing options to view courses, add or drop courses, view grades, and return to the main menu.
+     * Utilizes a menu-driven approach to handle different student operations.
+     *
+     * @param allCourses   A list of all available courses.
+     * @param allStudents  A list of all students for potential operations that require it.
+     * @param scanner      Scanner object to read user input.
+     */
     public void manageOperations(List<Course> allCourses, List<Student> allStudents, Scanner scanner) {
         boolean exit = false;
         while (!exit) {
-            System.out.println("Select option: 1. View Courses 2. Add Course 3. Drop Course 4. View Grades 5. Return to Main Menu");
-            int choice = scanner.nextInt();
+            // Display menu
+            System.out.println("---------------------------");
+            System.out.println("Student Operations");
+            System.out.println("---------------------------");
+            System.out.println("1 -- View Courses");
+            System.out.println("2 -- Add Course");
+            System.out.println("3 -- Drop Course");
+            System.out.println("4 -- View Grades");
+            System.out.println("5 -- Return to Main Menu");
+            System.out.println("");
+            System.out.println("Please enter your option, e.g., '1'.");
+
+            String option = scanner.nextLine();
+
+            // Check if the option is a valid integer
+            int choice = -1;
+            try {
+                choice = Integer.parseInt(option);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                continue;
+            }
+
+            // Process the user's choice
             switch (choice) {
                 case 1:
                     viewCourses();
@@ -34,7 +68,7 @@ public class Student extends User {
                     addCourse(allCourses, allStudents, scanner);
                     break;
                 case 3:
-                	dropCourse(scanner, allStudents, "src/studentinfo.txt");
+                    dropCourse(scanner, allStudents, "src/studentinfo.txt");
                     break;
                 case 4:
                     viewGrades(allCourses);
@@ -43,18 +77,29 @@ public class Student extends User {
                     exit = true;
                     break;
                 default:
-                    System.out.println("Invalid choice.");
+                    System.out.println("Invalid choice. Please enter a number between 1 and 5.");
             }
         }
     }
 
-    // View enrolled courses
-    public void viewCourses() {
+
+    /**
+     * Displays the courses currently enrolled by the student along with their grades.
+     * Iterates over the courses map and prints each course ID and corresponding grade.
+     */
+    private void viewCourses() {
         courses.forEach((courseId, grade) -> System.out.println("Course ID: " + courseId + ", Grade: " + grade));
     }
 
- // Add a course
-    public void addCourse(List<Course> allCourses, List<Student> allStudents, Scanner scanner) {
+    /**
+     * Adds a course to the student's schedule after checking for course existence and potential scheduling conflicts.
+     * Ensures the student is not already enrolled in the course and that no time conflicts occur with existing courses.
+     *
+     * @param allCourses   A list of all available courses to check against.
+     * @param allStudents  A list of all students, used for saving data after modification.
+     * @param scanner      Scanner object to read user input.
+     */
+    private void addCourse(List<Course> allCourses, List<Student> allStudents, Scanner scanner) {
         System.out.println("Enter Course ID to add:");
         String courseId = scanner.next();
         Course courseToAdd = allCourses.stream()
@@ -94,41 +139,77 @@ public class Student extends User {
         }
     }
 
-    // Helper method to check for time conflicts
+    /**
+     * Checks for a scheduling conflict between an existing course and a new course.
+     * Compares the days and times of both courses to determine overlap.
+     *
+     * @param existingCourse The existing course to compare against.
+     * @param newCourse      The new course to be added.
+     * @return               True if there is a conflict, false otherwise.
+     */
     private boolean hasTimeConflict(Course existingCourse, Course newCourse) {
-        // Compare days
+        // Loop through each day of the new course. The days are represented as characters in a string.
         for (char day : newCourse.getDays().toCharArray()) {
+            // Check if the existing course occurs on the same day as the new course.
             if (existingCourse.getDays().indexOf(day) != -1) {
-                // Compare times
+                // If they occur on the same day, check for overlapping times.
+                // Calls the 'overlaps' method to determine if the time periods of the two courses overlap.
                 if (overlaps(existingCourse.getStartTime(), existingCourse.getEndTime(),
                              newCourse.getStartTime(), newCourse.getEndTime())) {
+                    // If there is an overlap in time, return true indicating a time conflict.
                     return true;
                 }
             }
         }
+        // If no conflict is found after checking all days, return false.
         return false;
     }
 
- // Helper method to check if two time periods overlap
+
+    /**
+     * Determines if two time periods overlap using LocalTime for comparison.
+     * Parses the start and end times of each period and compares them for overlap.
+     *
+     * @param startTime1 Start time of the first period.
+     * @param endTime1   End time of the first period.
+     * @param startTime2 Start time of the second period.
+     * @param endTime2   End time of the second period.
+     * @return           True if the periods overlap, false otherwise.
+     */
     private boolean overlaps(String startTime1, String endTime1, String startTime2, String endTime2) {
+        // Define a DateTimeFormatter to parse the time strings. The format is "HH:mm" (hours and minutes).
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         try {
+            // Parse the start and end times of the first period using the formatter.
             LocalTime start1 = LocalTime.parse(startTime1.trim(), formatter);
             LocalTime end1 = LocalTime.parse(endTime1.trim(), formatter);
+
+            // Parse the start and end times of the second period using the formatter.
             LocalTime start2 = LocalTime.parse(startTime2.trim(), formatter);
             LocalTime end2 = LocalTime.parse(endTime2.trim(), formatter);
 
+            // Check for overlapping time periods.
+            // If start1 is not after end2 and start2 is not after end1, there's an overlap.
             return !start1.isAfter(end2) && !start2.isAfter(end1);
         } catch (DateTimeParseException e) {
+            // If there is an error parsing the time strings, catch the exception and print an error message.
             System.err.println("Error parsing time: " + e.getMessage());
-            return false; // or handle the error as appropriate
+            // Return false or handle the error as appropriate. Here, we choose to return false,
+            // indicating no overlap as the time could not be parsed correctly.
+            return false;
         }
     }
 
 
 
- // New method to save student data to file
-    public static void saveStudentsToFile(List<Student> students, String filePath) {
+    /**
+     * Saves the updated list of students to a file.
+     * Formats each student's information into a string and writes to the specified file.
+     *
+     * @param students   The list of students to be saved.
+     * @param filePath   The path of the file to save the student data.
+     */
+    private static void saveStudentsToFile(List<Student> students, String filePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (Student student : students) {
                 String studentData = student.getId() + "; " + 
@@ -147,9 +228,15 @@ public class Student extends User {
     }
 
     
- // In your methods where you modify student data
- // Example in dropCourse method
-    public void dropCourse(Scanner scanner, List<Student> allStudents, String filePath) {
+    /**
+     * Drops a course from the student's schedule.
+     * Checks if the course is in the student's current schedule before removing it.
+     *
+     * @param scanner      Scanner object to read user input.
+     * @param allStudents  A list of all students, used for saving data after modification.
+     * @param filePath     The path of the file to save the student data.
+     */
+    private void dropCourse(Scanner scanner, List<Student> allStudents, String filePath) {
     	System.out.println("Enter Course ID to drop:");
 	     String courseId = scanner.next();
 	     if (this.courses.remove(courseId) != null) {
@@ -162,8 +249,13 @@ public class Student extends User {
 
 
 
-    // View grades
-    public void viewGrades(List<Course> allCourses) {
+    /**
+     * Displays the grades for each course the student is enrolled in.
+     * Iterates over the courses map and prints the grade for each course.
+     *
+     * @param allCourses A list of all available courses to find course names.
+     */
+    private void viewGrades(List<Course> allCourses) {
         courses.forEach((courseId, grade) -> {
             Course course = allCourses.stream()
                                       .filter(c -> c.getCourseId().equals(courseId))

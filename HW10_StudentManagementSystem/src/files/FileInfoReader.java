@@ -13,6 +13,15 @@ import roles.Professor;
 import roles.Student;
 import courses.Course;
 
+/**
+ * Constructor for FileInfoReader.
+ * Initializes paths for course, student, professor, and admin info and loads professor name to ID map.
+ *
+ * @param courseInfoPath  Path to the course information file.
+ * @param studentInfoPath Path to the student information file.
+ * @param profInfoPath    Path to the professor information file.
+ * @param adminInfoPath   Path to the admin information file.
+ */
 public class FileInfoReader {
     private String courseInfoPath;
     private String studentInfoPath;
@@ -34,7 +43,12 @@ public class FileInfoReader {
             // or handle it in a way that the application can safely continue.
         } // Load mapping when instance is created
     }
-
+    
+    /**
+     * Loads a mapping of professor names to IDs from a file.
+     *
+     * @throws IOException If an I/O error occurs.
+     */
     private void loadProfessorNameToIdMap() throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(profInfoPath))) {
             String line;
@@ -48,7 +62,12 @@ public class FileInfoReader {
         }
     }
 
-
+    /**
+     * Reads course information from a file and returns a list of Course objects.
+     *
+     * @return A list of Course objects.
+     * @throws IOException If an I/O error occurs.
+     */
     public List<Course> readCourseInfo() throws IOException {
         List<Course> courses = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(courseInfoPath))) {
@@ -67,7 +86,12 @@ public class FileInfoReader {
         return courses;
     }
 
-
+    /**
+     * Reads student information from a file and returns a list of Student objects.
+     *
+     * @return A list of Student objects.
+     * @throws IOException If an I/O error occurs.
+     */
     public List<Student> readStudentInfo() throws IOException {
         List<Student> students = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(studentInfoPath))) {
@@ -94,7 +118,13 @@ public class FileInfoReader {
         }
         return students;
     }
-
+    
+    /**
+     * Reads professor information from a file and returns a list of Professor objects.
+     *
+     * @return A list of Professor objects.
+     * @throws IOException If an I/O error occurs.
+     */
     public List<Professor> readProfInfo() throws IOException {
         List<Professor> professors = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(profInfoPath))) {
@@ -102,10 +132,10 @@ public class FileInfoReader {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(";");
                 if (parts.length == 4) {
-                    String name = parts[0].trim(); // Trim the parts to remove whitespace;
-                    String id = parts[1].trim(); // Trim the parts to remove whitespace;
-                    String username = parts[2].trim(); // Trim the parts to remove whitespace;
-                    String password = parts[3].trim(); // Trim the parts to remove whitespace;
+                    String id = parts[0].trim(); // Correctly assign the first part to id
+                    String name = parts[1].trim(); // Correctly assign the second part to name
+                    String username = parts[2].trim();
+                    String password = parts[3].trim();
                     Professor professor = new Professor(id, name, username, password, new ArrayList<>());
                     professors.add(professor);
                 }
@@ -114,7 +144,12 @@ public class FileInfoReader {
         return professors;
     }
 
-
+    /**
+     * Reads admin information from a file and returns a list of Admin objects.
+     *
+     * @return A list of Admin objects.
+     * @throws IOException If an I/O error occurs.
+     */
     public List<Admin> readAdminInfo() throws IOException {
         List<Admin> admins = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(adminInfoPath))) {
@@ -128,14 +163,10 @@ public class FileInfoReader {
                     String password = parts[3].trim();
                     Admin admin = new Admin(id, name, username, password);
                     admins.add(admin);
-                    System.out.println("Loaded admin: " + username); // Debug print
                 }
             }
         }
         return admins;
     }
 
-
-
-    // Additional helper methods if needed
 }
