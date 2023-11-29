@@ -16,8 +16,25 @@ class CourseTest {
         // Initialize a Course object before each test
         course = new Course("CIS101", "Intro to Computer Science", "Dr. Smith", "", "MWF", "10:00", "11:00", 30);
     }
+    
+    @Test
+    void testToString() {
+        // Initialize a Course object with known values
+        Course course = new Course("CIS101", "Intro to Computer Science", "Dr. Smith", "P001", "MWF", "09:00", "10:30", 30);
 
-//  Tests for Add Student
+        // Expected string based on the Course's toString format
+        String expected = "Course{" +
+                          "courseId='CIS101'" +
+                          ", professorName='Dr. Smith'" +
+                          ", days='MWF'" +
+                          ", startTime='09:00'" +
+                          ", endTime='10:30'" +
+                          '}';
+
+        // Check if the actual toString output matches the expected string
+        assertEquals(expected, course.toString(), "toString should return the correctly formatted string");
+    }
+
     @Test
     void testAddStudent() {
         String studentId = "12345";
@@ -70,12 +87,11 @@ class CourseTest {
         assertEquals("CIS102", course.getCourseId(), "Course ID should be updated to CIS102");
     }
 
-    // Additional tests can be written for other getters and setters
 
     @Test
     void testHasTimeConflict() {
         Course otherCourse = new Course("CIS102", "Advanced CS", "Dr. Johnson", "002", "MWF", "10:30", "11:30", 25);
-        assertTrue(course.hasTimeConflict(otherCourse), "Courses should have a time conflict");
+        assertTrue(course.hasTimeConflict(otherCourse.getStartTime(), otherCourse.getEndTime(), otherCourse.getDays()), "Courses should have a time conflict");
     }
 
     @Test
@@ -92,8 +108,6 @@ class CourseTest {
         course.unenrollStudent(studentId);
         assertFalse(course.isStudentEnrolled(studentId), "Student should be unenrolled from the course");
     }
-
- // ... existing imports and class declaration
 
     @Test
     void testEnrollStudentInFullCourse() {

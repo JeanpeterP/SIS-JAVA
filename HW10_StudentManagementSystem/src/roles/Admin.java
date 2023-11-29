@@ -233,8 +233,12 @@ public class Admin extends User {
         if ("q".equalsIgnoreCase(lecturerId)) return "Operation cancelled by user.";
 
         // Check if the professor exists in the system using the provided ID.
+        System.out.println("Current professorMap: " + professorMap);
+
         Professor professor = professorMap.get(lecturerId);
         if (professor == null) {
+            System.out.println("Professor ID not found for lecturerId: " + lecturerId);
+
             // Handle the case where the professor is not found, and add a new professor.
             System.out.println("Professor not found. Adding a new professor:");
             boolean isProfessorAdded = addProfessor(scanner); // Modify addProfessor to return a boolean
@@ -244,17 +248,18 @@ public class Admin extends User {
             professor = professorMap.get(lecturerId); // Get the newly added professor
         }
         
-        // Check for time conflicts with existing courses.
+        // Check for time conflicts with existing courses
         for (Course existingCourse : courses) {
-            System.out.println("Existing Course: " + existingCourse);
-            System.out.println("Comparing Existing Course Professor Name: '" + existingCourse.getProfessorName().trim() + "' with Current Professor Name: '" + professor.getName().trim() + "'");
-
-            if (existingCourse.getProfessorName().trim().equals(professor.getName().trim()) && timeConflict(existingCourse, startTime, endTime, days)) {
-                System.out.println("Time conflict with another course taught by the same lecturer.");
-                return "Error: Time conflict with another course.";
+            // Only compare with courses taught by the same professor
+            if (existingCourse.getProfessorId().equals(lecturerId)) {
+                // Check if the existing course conflicts with the new course details
+                if (existingCourse.hasTimeConflict(startTime, endTime, days)) {
+                    System.out.println("Time conflict with another course taught by the same lecturer.");
+                    return "Error: Time conflict with another course.";
+                }
             }
         }
-        
+
         
         // Create a new course object and add it to the list of courses.
         Course newCourse = new Course(

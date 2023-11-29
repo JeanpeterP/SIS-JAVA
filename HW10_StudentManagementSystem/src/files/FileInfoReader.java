@@ -55,8 +55,8 @@ public class FileInfoReader {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(";");
                 if (parts.length >= 2) {
-                    // Assuming parts[0] is ID and parts[1] is name
-                    professorNameToIdMap.put(parts[1].trim(), parts[0].trim());
+                    // Name as key, ID as value
+                    professorNameToIdMap.put(parts[0].trim(), parts[1].trim());
                 }
             }
         }
@@ -77,7 +77,13 @@ public class FileInfoReader {
                 if (parts.length == 7) {
                     int capacity = Integer.parseInt(parts[6].trim());
                     String professorName = parts[2].trim();
-                    String professorId = professorNameToIdMap.getOrDefault(professorName, ""); // Get ID or empty string if not found
+                    String professorId = professorNameToIdMap.get(professorName);
+
+                    if (professorId == null) {
+                        System.err.println("No matching ID found for professor: " + professorName);
+                        continue; // Skip adding this course if the professor ID is not found
+                    }
+
                     Course course = new Course(parts[0], parts[1], professorName, professorId, parts[3], parts[4], parts[5], capacity);
                     courses.add(course);
                 }
@@ -85,6 +91,8 @@ public class FileInfoReader {
         }
         return courses;
     }
+
+
 
     /**
      * Reads student information from a file and returns a list of Student objects.
@@ -136,7 +144,7 @@ public class FileInfoReader {
                     String name = parts[1].trim(); // Correctly assign the second part to name
                     String username = parts[2].trim();
                     String password = parts[3].trim();
-                    Professor professor = new Professor(id, name, username, password, new ArrayList<>());
+                    Professor professor = new Professor(name, id, username, password, new ArrayList<>());
                     professors.add(professor);
                 }
             }

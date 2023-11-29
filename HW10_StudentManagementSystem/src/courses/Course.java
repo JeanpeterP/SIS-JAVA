@@ -77,21 +77,56 @@ public class Course {
         return new HashSet<>(enrolledStudents); // Return a copy to preserve encapsulation
     }
     
-    public boolean hasTimeConflict(Course otherCourse) {
-        // Check if courses are on the same day
-        if (!this.days.equals(otherCourse.days)) {
-            return false; // No conflict if courses are on different days
+    /**
+     * Checks if this course has a time conflict with given course details.
+     *
+     * @param newStartTime The start time of the new course.
+     * @param newEndTime   The end time of the new course.
+     * @param newDays      The days the new course will take place.
+     * @return true if there is a time conflict, false otherwise.
+     */
+    public boolean hasTimeConflict(String newStartTime, String newEndTime, String newDays) {
+        for (char day : newDays.toCharArray()) {
+            if (this.days.indexOf(day) != -1) {
+                if (timePeriodsOverlap(this.startTime, this.endTime, newStartTime, newEndTime)) {
+                    return true;
+                }
+            }
         }
+        return false;
+    }
 
-        // Parse the start and end times of both courses
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        LocalTime thisStartTime = LocalTime.parse(this.startTime, formatter);
-        LocalTime thisEndTime = LocalTime.parse(this.endTime, formatter);
-        LocalTime otherStartTime = LocalTime.parse(otherCourse.startTime, formatter);
-        LocalTime otherEndTime = LocalTime.parse(otherCourse.endTime, formatter);
+    /**
+     * Determines if two time periods overlap.
+     *
+     * @param startTime1 First period start time.
+     * @param endTime1   First period end time.
+     * @param startTime2 Second period start time.
+     * @param endTime2   Second period end time.
+     * @return true if periods overlap, false otherwise.
+     */
+    private boolean timePeriodsOverlap(String startTime1, String endTime1, String startTime2, String endTime2) {
+        int start1 = timeToInt(startTime1);
+        int end1 = timeToInt(endTime1);
+        int start2 = timeToInt(startTime2);
+        int end2 = timeToInt(endTime2);
 
-        // Check for time overlap
-        return !thisStartTime.isAfter(otherEndTime) && !otherStartTime.isAfter(thisEndTime);
+        // Check if one period starts during the other
+        return (start1 <= end2 && end1 >= start2);
+    }
+
+
+    /**
+     * Converts a time string in "HH:mm" format to an integer representing minutes since midnight.
+     *
+     * @param time The time string.
+     * @return The number of minutes since midnight.
+     */
+    private int timeToInt(String time) {
+        String[] parts = time.trim().split(":"); // Trim the time string before splitting
+        int hours = Integer.parseInt(parts[0]);
+        int minutes = Integer.parseInt(parts[1]);
+        return hours * 60 + minutes; // Convert time to minutes since midnight
     }
 
     // Check if a student is enrolled in the course

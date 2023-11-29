@@ -53,20 +53,20 @@ public class Controller {
             Map<String, Professor> professorIdMap = new HashMap<>();
             for (Professor professor : professors) {
                 professorIdMap.put(professor.getId(), professor);
+
             }
 
             // Link courses with professors
             for (Course course : courses) {
-                // Assuming course.getProfessorName() returns the professor's ID
-                String professorId = course.getProfessorName(); 
+                String professorId = course.getProfessorId(); 
                 if (professorIdMap.containsKey(professorId)) {
                     Professor professor = professorIdMap.get(professorId);
                     professor.getCourses().add(course.getCourseId());
-                    course.setProfessorId(professor.getId()); // This line might be redundant now
                 } else {
-                    System.out.println("No matching professor found for Course: " + course.getCourseName() + ", Professor ID: " + course.getProfessorName());
+                    System.out.println("No matching professor found for Course: " + course.getCourseName() + ", Professor ID: " + professorId);
                 }
             }
+
 
 
             // Create a map for quick course lookups

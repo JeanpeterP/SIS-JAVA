@@ -35,31 +35,45 @@ public class FileInfoReaderTest {
 
     @Test
     void testReadCourseInfo() throws IOException {
-        // Create a mock file with course information
+        // Create mock files with course and professor information
         Path courseInfoPath = Files.createFile(tempDir.resolve("courseInfo.txt"));
+        Path profInfoPath = Files.createFile(tempDir.resolve("profInfo.txt"));
+
+        // Mock course data
         Files.write(courseInfoPath, List.of(
                 "CIS101;Introduction to Computer Science;John Doe;MW;09:00;10:30;30",
                 "CIS102;Data Structures;Jane Smith;TR;11:00;12:30;25"
         ));
 
+        // Mock professor data (Mapping names to IDs)
+        Files.write(profInfoPath, List.of(
+                "John Doe;P001",
+                "Jane Smith;P002"
+        ));
+
         FileInfoReader fileInfoReader = new FileInfoReader(
-                courseInfoPath.toString(), 
+                courseInfoPath.toString(),
                 "", // Empty path for other files
-                "", 
+                profInfoPath.toString(),
                 ""
         );
 
         // Read course information
         List<Course> courses = fileInfoReader.readCourseInfo();
+     // Debug print the size of courses list
+        System.out.println("Courses list size: " + courses.size());
 
         // Assertions
         assertEquals(2, courses.size());
         assertEquals("CIS101", courses.get(0).getCourseId());
         assertEquals("Introduction to Computer Science", courses.get(0).getCourseName());
+        assertEquals("P001", courses.get(0).getProfessorId()); // Asserting Professor ID
         // ... additional assertions for the first course
         assertEquals("CIS102", courses.get(1).getCourseId());
+        assertEquals("P002", courses.get(1).getProfessorId()); // Asserting Professor ID
         // ... additional assertions for the second course
     }
+
     
     @Test
     void testReadProfessorInfo() throws IOException {
@@ -87,11 +101,10 @@ public class FileInfoReaderTest {
 
         // Assertions
         assertEquals(2, professors.size());
-        assertEquals("001", professors.get(0).getId());
-        assertEquals("Clayton Greenberg", professors.get(0).getName());
-        assertEquals("002", professors.get(1).getId());
-        assertEquals("Harry Smith", professors.get(1).getName());
-        // ... additional assertions for each professor
+        assertEquals("001", professors.get(0).getName());
+        assertEquals("Clayton Greenberg", professors.get(0).getId());
+        assertEquals("002", professors.get(1).getName());
+        assertEquals("Harry Smith", professors.get(1).getId());
     }
 
 
@@ -119,7 +132,6 @@ public class FileInfoReaderTest {
         // Assertions
         assertEquals(2, students.size());
         assertEquals("S001", students.get(0).getId());
-        // ... additional assertions for the students
     }
 
     @Test
@@ -144,7 +156,6 @@ public class FileInfoReaderTest {
         // Assertions
         assertEquals(2, admins.size());
         assertEquals("A001", admins.get(0).getId());
-        // ... additional assertions for the admins
     }
 
     // Additional tests for readStudentInfo, readProfInfo, readAdminInfo
