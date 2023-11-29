@@ -285,69 +285,6 @@ public class Admin extends User {
 
     }
 
-	/**
-	 * Checks for time conflicts between the new course and existing courses.
-	 *
-	 * @param existingCourse The existing course to compare against.
-	 * @param newStartTime   The start time of the new course.
-	 * @param newEndTime     The end time of the new course.
-	 * @param newDays        The days the new course will take place.
-	 * @return true if there is a conflict, false otherwise.
-	 */
-    private boolean timeConflict(Course existingCourse, String newStartTime, String newEndTime, String newDays) {
-        // Loop through each day the new course occurs on.
-        for (char day : newDays.toCharArray()) {
-            // Check if the existing course occurs on the same day.
-            if (existingCourse.getDays().indexOf(day) != -1) {
-                // Check if the time of the new course overlaps with the existing course.
-                if (overlaps(existingCourse.getStartTime(), existingCourse.getEndTime(), newStartTime, newEndTime)) {
-                    // Return true if there is a time conflict.
-                    return true;
-                }
-            }
-        }
-        // Return false if no conflicts are found.
-        return false;
-    }
-
-
-
-    /**
-     * Helper method to determine if two time periods overlap.
-     *
-     * @param startTime1 Start time of the first period.
-     * @param endTime1   End time of the first period.
-     * @param startTime2 Start time of the second period.
-     * @param endTime2   End time of the second period.
-     * @return true if the periods overlap, false otherwise.
-     */
-    private boolean overlaps(String startTime1, String endTime1, String startTime2, String endTime2) {
-        // Convert time strings to integer representations of minutes since midnight.
-        int start1 = timeToInt(startTime1.trim());
-        int end1 = timeToInt(endTime1.trim());
-        int start2 = timeToInt(startTime2.trim());
-        int end2 = timeToInt(endTime2.trim());
-
-        // Check if the time intervals of the two courses overlap.
-        return (start1 >= start2 && start1 < end2) || (end1 > start2 && end1 <= end2) ||
-               (start2 >= start1 && start2 < end1) || (end2 > start1 && end2 <= end1);
-    }
-
-
-    /**
-     * Converts a time string in "HH:mm" format to an integer representing minutes since midnight.
-     *
-     * @param time The time string.
-     * @return The number of minutes since midnight.
-     */
-    private int timeToInt(String time) {
-        String[] parts = time.trim().split(":"); // Trim the time string before splitting
-        int hours = Integer.parseInt(parts[0]);
-        int minutes = Integer.parseInt(parts[1]);
-        return hours * 60 + minutes; // Convert time to minutes since midnight
-    }
-
-
 
     /**
      * Edits an existing course based on user input.

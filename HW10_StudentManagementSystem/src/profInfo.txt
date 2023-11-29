@@ -28,5 +28,6 @@ Dan Roth; 027; Roth; password590
 Stephan A. Zdancewic; 028; Zdancewic; password590
 Brandon L Krakowsky; 029; Krakowsky; password590
 Insup Lee; 030; Lee; password590
-Arvind Bhusnurmath; 031; Bhusnurmath; password590
+New Arvind; 031; Arvin; password590
 Jean Henri Gallier; 032; Gallier; password590
+Rodger Biller; 033; Rodgerbiller; password590

@@ -68,7 +68,7 @@ public class Student extends User {
                     addCourse(allCourses, allStudents, scanner);
                     break;
                 case 3:
-                    dropCourse(scanner, allStudents, "src/studentinfo.txt");
+                    dropCourse(allCourses, scanner, allStudents, "src/studentinfo.txt");
                     break;
                 case 4:
                     viewGrades(allCourses);
@@ -101,11 +101,11 @@ public class Student extends User {
      */
     private void addCourse(List<Course> allCourses, List<Student> allStudents, Scanner scanner) {
         System.out.println("Enter Course ID to add:");
-        String courseId = scanner.next();
+        String courseId = scanner.nextLine().trim();
         Course courseToAdd = allCourses.stream()
-                                      .filter(c -> c.getCourseId().equals(courseId))
-                                      .findFirst()
-                                      .orElse(null);
+                                       .filter(c -> c.getCourseId().equals(courseId))
+                                       .findFirst()
+                                       .orElse(null);
 
         if (courseToAdd == null) {
             System.out.println("Course not found.");
@@ -118,13 +118,13 @@ public class Student extends User {
         }
 
         // Check for time conflicts
-        for (Map.Entry<String, String> entry : courses.entrySet()) {
+        for (String existingCourseId : courses.keySet()) {
             Course existingCourse = allCourses.stream()
-                                              .filter(c -> c.getCourseId().equals(entry.getKey()))
+                                              .filter(c -> c.getCourseId().equals(existingCourseId))
                                               .findFirst()
                                               .orElse(null);
 
-            if (existingCourse != null && hasTimeConflict(existingCourse, courseToAdd)) {
+            if (existingCourse != null && existingCourse.hasTimeConflict(courseToAdd.getStartTime(), courseToAdd.getEndTime(), courseToAdd.getDays())) {
                 System.out.println("Cannot add course due to a schedule conflict with " + existingCourse.getCourseId());
                 return;
             }
@@ -135,68 +135,7 @@ public class Student extends User {
             System.out.println("Course added successfully.");
             Student.saveStudentsToFile(allStudents, "src/studentinfo.txt"); // Save changes to file
         } else {
-            System.out.println("Could not add course.");
-        }
-    }
-
-    /**
-     * Checks for a scheduling conflict between an existing course and a new course.
-     * Compares the days and times of both courses to determine overlap.
-     *
-     * @param existingCourse The existing course to compare against.
-     * @param newCourse      The new course to be added.
-     * @return               True if there is a conflict, false otherwise.
-     */
-    private boolean hasTimeConflict(Course existingCourse, Course newCourse) {
-        // Loop through each day of the new course. The days are represented as characters in a string.
-        for (char day : newCourse.getDays().toCharArray()) {
-            // Check if the existing course occurs on the same day as the new course.
-            if (existingCourse.getDays().indexOf(day) != -1) {
-                // If they occur on the same day, check for overlapping times.
-                // Calls the 'overlaps' method to determine if the time periods of the two courses overlap.
-                if (overlaps(existingCourse.getStartTime(), existingCourse.getEndTime(),
-                             newCourse.getStartTime(), newCourse.getEndTime())) {
-                    // If there is an overlap in time, return true indicating a time conflict.
-                    return true;
-                }
-            }
-        }
-        // If no conflict is found after checking all days, return false.
-        return false;
-    }
-
-
-    /**
-     * Determines if two time periods overlap using LocalTime for comparison.
-     * Parses the start and end times of each period and compares them for overlap.
-     *
-     * @param startTime1 Start time of the first period.
-     * @param endTime1   End time of the first period.
-     * @param startTime2 Start time of the second period.
-     * @param endTime2   End time of the second period.
-     * @return           True if the periods overlap, false otherwise.
-     */
-    private boolean overlaps(String startTime1, String endTime1, String startTime2, String endTime2) {
-        // Define a DateTimeFormatter to parse the time strings. The format is "HH:mm" (hours and minutes).
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        try {
-            // Parse the start and end times of the first period using the formatter.
-            LocalTime start1 = LocalTime.parse(startTime1.trim(), formatter);
-            LocalTime end1 = LocalTime.parse(endTime1.trim(), formatter);
-
-            // Parse the start and end times of the second period using the formatter.
-            LocalTime start2 = LocalTime.parse(startTime2.trim(), formatter);
-            LocalTime end2 = LocalTime.parse(endTime2.trim(), formatter);
-
-            // Check for overlapping time periods.
-            // If start1 is not after end2 and start2 is not after end1, there's an overlap.
-            return !start1.isAfter(end2) && !start2.isAfter(end1);
-        } catch (DateTimeParseException e) {
-            // If there is an error parsing the time strings, catch the exception and print an error message.
-            System.err.println("Error parsing time: " + e.getMessage());
-            // Return false or handle the error as appropriate. Here, we choose to return false,
-            // indicating no overlap as the time could not be parsed correctly.
-            return false;
+            System.out.println("Could not add course. It may be full.");
         }
     }
 
@@ -236,16 +175,37 @@ public class Student extends User {
      * @param allStudents  A list of all students, used for saving data after modification.
      * @param filePath     The path of the file to save the student data.
      */
-    private void dropCourse(Scanner scanner, List<Student> allStudents, String filePath) {
-    	System.out.println("Enter Course ID to drop:");
-	     String courseId = scanner.next();
-	     if (this.courses.remove(courseId) != null) {
-	         System.out.println("Course dropped successfully.");
-	         Student.saveStudentsToFile(allStudents, filePath);
-	     } else {
-	         System.out.println("Course not found in your schedule.");
-	     }
-	 }
+    private void dropCourse(List<Course> allCourses, Scanner scanner, List<Student> allStudents, String studentInfoFilePath) {
+        System.out.println("Enter Course ID to drop:");
+        String courseId = scanner.nextLine().trim();
+
+        if (!courses.containsKey(courseId)) {
+            System.out.println("You are not enrolled in this course.");
+            return;
+        }
+
+        String grade = courses.get(courseId);
+        if (!grade.equals("Not Graded")) {
+            System.out.println("Cannot drop a course that has already been graded.");
+            return;
+        }
+
+        Course course = allCourses.stream()
+                                  .filter(c -> c.getCourseId().equals(courseId))
+                                  .findFirst()
+                                  .orElse(null);
+
+        if (course != null) {
+            course.removeStudent(this.getId());
+            courses.remove(courseId);
+            System.out.println("Course dropped successfully.");
+            Student.saveStudentsToFile(allStudents, studentInfoFilePath); // Save changes to file
+        } else {
+            System.out.println("Error: Course not found.");
+        }
+    }
+
+
 
 
 

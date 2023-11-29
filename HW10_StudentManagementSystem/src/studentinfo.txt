@@ -1,4 +1,2 @@
-001; StudentName1; testStudent01; password590; CIS191: A, CIS320: A
-002; StudentName2; testStudent02; password590; CIT592: A, CIT593: A-
-003; Fabe Hoe; Fabe Hoe; password590; CIT592: A+
-004; Bobby Hoe; bobbyhoe; password590; CIT419: A+
+001; New Studentname1; nteststudent01; password590; CIS191: A, CIS320: A, CIS111: Not Graded
+002; Nstudentname2; testStudent02; password590; CIT592: A, CIT593: A-

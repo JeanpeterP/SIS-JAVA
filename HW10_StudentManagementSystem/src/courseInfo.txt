@@ -1,10 +1,8 @@
 CIT590; Programming Languages and Techniques; Brandon L Krakowsky; MW; 16:30; 18:00; 110
-CIT591; Introduction to Software Development; Arvind Bhusnurmath; MW; 12:00; 13:30; 120
 CIT592; Mathematical Foundations of Computer Science; Clayton Greenberg; TR; 10:00; 11:00; 72
 CIT593; Introduction to Computer Systems; Thomas Joseph Farmer; MWF; 11:00; 12:00; 72
 CIT594; Data Structures and Sofware Design; Eric Noel Fouh Mbindi; TR; 10:30; 12:00; 72
 CIT595; Computer Systems Programming; Insup Lee; TR; 15:00; 16:30; 72
-CIT596; Algorithms and Computation; Arvind Bhusnurmath; MW; 10:30; 12:00; 120
 CIS105; Computational Data Exploration; Clayton Greenberg; MWF; 10:00; 11:00; 60
 CIS110; Introduction to Computer Programming; Harry Smith; MWF; 9:00; 10:00; 375
 CIS120; Programming Languages and Techniques; Stephanie Weirich; MWF; 11:00; 12:00; 300
@@ -48,3 +46,4 @@ CIS580; Machine Perception; Konstantinos Daniilidis; MW; 12:00; 13:30; 100
 CIS620; Advanced Topics in Machine Learning; Dan Roth; M; 15:00; 18:00; 40
 CIS660; Advanced Topics in Computer Graphics and Animation; Stephen Lane; MW; 10:30; 12:00; 32
 CIS670; Advanced Topics in Programming Languages; Stephan A. Zdancewic; MW; 13:00; 15:00; 32
+CIS111; Triple 1; Stephen Lane; TF; 10:30; 13:00; 99

@@ -1,6 +1,7 @@
 package courses;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -86,11 +87,33 @@ public class Course {
      * @return true if there is a time conflict, false otherwise.
      */
     public boolean hasTimeConflict(String newStartTime, String newEndTime, String newDays) {
+        // Check for day overlap first
+        if (!daysOverlap(this.days, newDays)) {
+            return false; // No day overlap, so no time conflict
+        }
+
+        // Check for time overlap
         for (char day : newDays.toCharArray()) {
             if (this.days.indexOf(day) != -1) {
                 if (timePeriodsOverlap(this.startTime, this.endTime, newStartTime, newEndTime)) {
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determines if the days of two courses overlap.
+     *
+     * @param days1 The days of the first course.
+     * @param days2 The days of the second course.
+     * @return true if the days overlap, false otherwise.
+     */
+    private boolean daysOverlap(String days1, String days2) {
+        for (char day : days2.toCharArray()) {
+            if (days1.indexOf(day) != -1) {
+                return true; // Found a common day
             }
         }
         return false;
@@ -128,6 +151,19 @@ public class Course {
         int minutes = Integer.parseInt(parts[1]);
         return hours * 60 + minutes; // Convert time to minutes since midnight
     }
+    
+   
+    private List<Course> allCourses;
+
+    public void CourseService(List<Course> allCourses) {
+        this.allCourses = allCourses;
+    }
+
+    public boolean doesCourseExist(String courseId) {
+        return allCourses.stream().anyMatch(c -> c.getCourseId().equals(courseId));
+    }
+
+    
 
     // Check if a student is enrolled in the course
     public boolean isStudentEnrolled(String studentId) {

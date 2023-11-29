@@ -80,7 +80,6 @@ public class FileInfoReader {
                     String professorId = professorNameToIdMap.get(professorName);
 
                     if (professorId == null) {
-                        System.err.println("No matching ID found for professor: " + professorName);
                         continue; // Skip adding this course if the professor ID is not found
                     }
 
